@@ -1,0 +1,91 @@
+<!doctype html>
+<!--
+MIT License
+Copyright (c) 2026 University of Peptide
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, follow">
+<meta name="description" content="A free offline concentration calculator with visible formulas. Educational arithmetic from University of Peptide.">
+<link rel="canonical" href="https://universityofpeptide.com/calculator">
+<title>Offline Concentration Calculator | University of Peptide</title>
+<style>
+:root{color-scheme:light;font-family:system-ui,-apple-system,sans-serif;color:#193c31;background:#f3f6f1}*{box-sizing:border-box}body{margin:0;padding:24px}main{max-width:900px;margin:24px auto}a{color:#185344;text-underline-offset:3px}header p{font-size:.75rem;letter-spacing:.15em;font-weight:700}h1{font-size:clamp(2rem,6vw,3.4rem);line-height:1.08;letter-spacing:-.05em;max-width:650px}p{line-height:1.7}.intro{max-width:690px;color:#465e54}.calculator{display:grid;grid-template-columns:1fr 1fr;border:1px solid #c6d4ca;border-radius:20px;overflow:hidden;background:white;margin:28px 0}form,.output{padding:28px}.output{background:#e5f1e6}label{display:block;font-size:.9rem;font-weight:600;margin:20px 0 8px}input,select,button{font:inherit;border:1px solid #8b9d94;border-radius:8px;padding:12px;min-width:0}input{width:100%;background:#fff;color:#193c31}select{background:#fff}.target{display:grid;grid-template-columns:1fr 95px;gap:8px}.result{font-size:2.5rem;letter-spacing:-.04em;font-weight:700;margin:15px 0}dl>div{display:flex;justify-content:space-between;gap:15px;border-bottom:1px solid #b6ccbd;padding:14px 0}dd{margin:0;font-weight:600}.error{color:#8a2020}button{cursor:pointer;background:#193c31;color:#fff;margin-top:16px}button:disabled{opacity:.5;cursor:default}summary{cursor:pointer;font-weight:600}code{overflow-wrap:anywhere}footer{margin-top:30px;font-size:.85rem}small{display:block;margin-top:8px;line-height:1.5}h2{font-size:1.15rem}noscript{display:block;padding:20px;background:#ffefbc}@media(max-width:650px){body{padding:16px}.calculator{grid-template-columns:1fr}form,.output{padding:22px}.result{font-size:2rem}}@media print{button{display:none}body{background:white}.calculator{break-inside:avoid}}
+</style>
+</head>
+<body><main>
+<header><p>UNIVERSITY OF PEPTIDE · FREE OFFLINE TOOL</p><h1>Concentration, made clear.</h1><div class="intro"><p>Convert mass and volume using your own inputs. This file works offline and sends no calculation data anywhere. Example values are for learning, not a dose recommendation.</p></div></header>
+<noscript>Enable JavaScript to calculate. The formulas and worked example below remain available without it.</noscript>
+<div class="calculator">
+<form id="inputs" autocomplete="off"><h2>Your inputs</h2>
+<label for="mass">Total compound mass (mg)</label><input id="mass" type="number" min="0" step="any" value="10" required>
+<label for="liquid">Liquid volume (mL)</label><input id="liquid" type="number" min="0" step="any" value="2" required>
+<label for="target">Target mass</label><div class="target"><input id="target" type="number" min="0" step="any" value="250" required><select id="unit" aria-label="Target unit"><option value="mcg">mcg</option><option value="mg">mg</option></select></div>
+<small>The calculation assumes the entered liquid volume is the solution volume and the compound is evenly distributed.</small>
+<button type="reset">Reset example</button>
+</form>
+<section class="output" aria-labelledby="result-title"><h2 id="result-title">Calculated volume</h2><div aria-live="polite" aria-atomic="true"><p id="error" class="error" hidden></p><div id="results"><p class="result" id="volume"></p><dl><div><dt>Concentration</dt><dd id="concentration"></dd></div><div><dt>Target mass</dt><dd id="mass-result"></dd></div><div><dt>U-100 scale</dt><dd id="marking"></dd></div></dl><p id="equation"></p><p id="capacity" hidden>The calculated volume exceeds 1 mL.</p></div></div><small>U-100 scale: 100 units = 1 mL. These markings express volume, not peptide mass or biological activity. Other scales differ.</small><button id="print" type="button">Print calculation</button></section>
+</div>
+<details open><summary>Formulas and worked example</summary><p><code>Target mg = target mcg / 1,000</code><br><code>Concentration mg/mL = total mg / volume mL</code><br><code>Target volume mL = target mg / concentration mg/mL</code><br><code>U-100 markings = target volume mL × 100</code></p><p>Example: 10 mg in 2 mL gives 5 mg/mL. A target of 250 mcg is 0.25 mg, corresponding to 0.05 mL and 5 U-100 markings. Check: 0.05 mL × 5 mg/mL = 0.25 mg.</p></details>
+<p>This tool checks arithmetic only. It cannot verify a product, choose a dose, assess sterility or establish safe use. It does not account for displacement, incomplete dissolution or handling losses. Displayed precision does not imply measurement accuracy.</p>
+<footer>Version 1.0 · MIT-licensed original software. <a href="https://universityofpeptide.com/reconstitution-math" target="_blank" rel="noopener">Read the calculation lesson</a> · <a href="https://universityofpeptide.com/research-tools" target="_blank" rel="noopener">More University of Peptide tools</a>. Links require an internet connection.</footer>
+<script>
+// Pure arithmetic function; tested separately from the interface.
+function calculateConcentration(total, liquid, target, unit) {
+  const values = [total, liquid, target].map(Number);
+  if (values.some(n => !Number.isFinite(n) || n <= 0)) return {error:'Enter a positive, finite number in every field.'};
+  if (!['mg','mcg'].includes(unit)) return {error:'Choose mg or mcg.'};
+  const [mass, volume, amount] = values;
+  const targetMg = unit === 'mcg' ? amount / 1000 : amount;
+  if (targetMg > mass) return {error:'The target exceeds the total compound mass.'};
+  const concentration = mass / volume;
+  const targetVolume = targetMg / concentration;
+  const units = targetVolume * 100;
+  if ([targetMg,concentration,targetVolume,units].some(n => !Number.isFinite(n) || n <= 0)) return {error:'These values exceed the supported numeric range.'};
+  return {targetMg,concentration,targetVolume,units};
+}
+const form = document.getElementById('inputs');
+const fields = Object.fromEntries(['mass','liquid','target','unit'].map(id => [id,document.getElementById(id)]));
+const format = n => new Intl.NumberFormat('en-US',{maximumSignificantDigits:6}).format(n);
+function update() {
+  const result = calculateConcentration(fields.mass.value,fields.liquid.value,fields.target.value,fields.unit.value);
+  document.getElementById('error').hidden = !result.error;
+  document.getElementById('error').textContent = result.error || '';
+  document.getElementById('results').hidden = !!result.error;
+  document.getElementById('print').disabled = !!result.error;
+  if (result.error) return;
+  document.getElementById('volume').textContent = format(result.targetVolume)+' mL';
+  document.getElementById('concentration').textContent = format(result.concentration)+' mg/mL';
+  document.getElementById('mass-result').textContent = format(result.targetMg)+' mg';
+  document.getElementById('marking').textContent = format(result.units)+' units';
+  document.getElementById('equation').textContent = format(result.targetMg)+' mg ÷ '+format(result.concentration)+' mg/mL = '+format(result.targetVolume)+' mL';
+  document.getElementById('capacity').hidden = result.targetVolume <= 1;
+}
+let previousUnit = fields.unit.value;
+form.addEventListener('submit',event=>event.preventDefault());
+form.addEventListener('input',event=>{if(event.target !== fields.unit) update();});
+fields.unit.addEventListener('change',()=>{
+  if (fields.target.value !== '' && Number.isFinite(Number(fields.target.value))) fields.target.value = String(Number(fields.target.value)*(previousUnit === 'mcg' ? .001 : 1000));
+  previousUnit = fields.unit.value; update();
+});
+form.addEventListener('reset',()=>{setTimeout(()=>{previousUnit=fields.unit.value;update();},0);});
+document.getElementById('print').addEventListener('click',()=>window.print());
+update();
+</script>
+</main></body></html>
